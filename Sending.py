@@ -10,18 +10,9 @@ def file_to_binary(file_path):
     _, file_extension = os.path.splitext(file_path)
     binary_extension = file_extension.encode('utf-8')
     binary_extension_length = len(binary_extension).to_bytes(2, 'big')
-
-    def read_file_in_chunks(file, chunk_size=8192):
-        while True:
-            data = file.read(chunk_size)
-            if not data:
-                break
-            yield data
-
     with open(file_path, 'rb') as file:
         binary_data = binary_extension_length + binary_extension
-        for chunk in read_file_in_chunks(file):
-            binary_data += chunk
+        binary_data += file.read()
 
     return ''.join(format(byte, '08b') for byte in np.frombuffer(binary_data, dtype=np.uint8))
 
